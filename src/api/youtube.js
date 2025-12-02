@@ -1,19 +1,14 @@
-import axios from 'axios';
-
 export default class Youtube {
-  constructor() {
-    this.httpClient = axios.create({
-      baseURL: 'https://www.googleapis.com/youtube/v3',
-      params: { key: import.meta.env.VITE_YOUTUBE_API_KEY },
-    });
+  constructor(apiClient) {
+    this.apiClient = apiClient;
   }
 
   async search(keyword) {
     return keyword ? this.#searchByKeyword(keyword) : this.#mostPopular();
   }
   async #searchByKeyword(keyword) {
-    return this.httpClient
-      .get('search', {
+    return this.apiClient
+      .search({
         params: {
           part: 'snippet',
           maxResults: 25,
@@ -25,8 +20,8 @@ export default class Youtube {
       .then((items) => items.map((item) => ({ ...item, id: item.id.videoId })));
   }
   async #mostPopular() {
-    return this.httpClient
-      .get('videos', {
+    return this.apiClient
+      .videos({
         params: {
           part: 'snippet',
           maxResults: 25,
